@@ -1,0 +1,14 @@
+type: code
+files:
+- name: src/Main.kt
+  visible: true
+  text: |-
+    val advice = pepTalk(name)
+    print(advice)
+  learner_created: false
+feedback_link: https://hyperskill.org/learn/step/11814#comment
+status: Solved
+feedback:
+  message: <html>Correct solution</html>
+  time: Tue, 09 Feb 2021 18:32:54 UTC
+record: -1
