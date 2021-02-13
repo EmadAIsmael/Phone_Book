@@ -70,6 +70,227 @@ files:
     \ + \"ms\");\n        }\n        \n        return CheckResult.correct();\n   \
     \ }\n}\n"
   learner_created: false
+- name: src/phonebook/BubbleSortJumpSearch.kt
+  visible: true
+  text: |
+    package phonebook
+
+    import java.io.File
+
+    class BubbleSortJumpSearch(directoryFile: File,
+                               searchItemsFile: File,
+                               val linearSearchTiming: Long = 0L): Search() {
+
+        var bubbleSortTime: Long = 0L
+            get() = field
+
+        var sortingTimeMessage = ""
+            get() = field
+
+        var searchingTimeMessage = ""
+            get() = field
+
+        init {
+
+            val lines = directoryFile.readLines().toMutableList()
+            val searchItems = searchItemsFile.readLines()
+
+            if (bubbleSort(lines)) {
+                search(lines, searchItems, SearchType.JUMP_SEARCH)
+
+                sortingTimeMessage = "Sorting time: ${timingMessage(bubbleSortTime)}"
+                searchingTimeMessage = "Searching time: ${timingMessage(searchTime)}"
+            } else {
+
+                search(lines, searchItems, SearchType.LINEAR_SEARCH)
+                sortingTimeMessage = "Sorting time: ${timingMessage(bubbleSortTime)} - STOPPED, moved to linear search"
+                searchingTimeMessage = "Searching time: ${timingMessage(searchTime)}"
+            }
+
+            println(statusMessage(foundCount, searchItems.size, searchTime))
+            println(sortingTimeMessage)
+            println(searchingTimeMessage)
+        }
+
+        private fun bubbleSort(a: MutableList<String>): Boolean {
+            val timeLimit = linearSearchTiming * 10
+            val startTime = System.currentTimeMillis()
+            for (i in (a.size - 1) downTo 0) {
+                var swapped = false
+                for (j in 0 until i) {
+                    if (a[j].substringAfter(" ") > a[j + 1].substringAfter(" ")) {
+                        a[j] = a[j + 1].also { a[j + 1] = a[j] }
+                        swapped = true
+                    }
+                }
+                bubbleSortTime = System.currentTimeMillis() - startTime
+                if (bubbleSortTime > timeLimit) return false
+                if (!swapped) break
+            }
+            return true
+        }
+    }
+  learner_created: true
+- name: src/phonebook/LinearSearch.kt
+  visible: true
+  text: |
+    package phonebook
+
+    import java.io.File
+
+    class LinearSearch(directoryFile: File, searchItemsFile: File): Search() {
+
+        init {
+            val lines = directoryFile.readLines()
+            val searchItems = searchItemsFile.readLines()
+
+            search(lines, searchItems, SearchType.LINEAR_SEARCH)
+            println(statusMessage(foundCount, searchItems.size, searchTime))
+        }
+    }
+  learner_created: true
+- name: src/phonebook/QuickSortBinarySearch.kt
+  visible: true
+  text: |-
+    package phonebook
+
+    import java.io.File
+
+    class QuickSortBinarySearch(
+        directoryFile: File,
+        searchItemsFile: File,
+        val linearSearchTiming: Long = 0L
+    ) : Search() {
+        var bubbleSortTime: Long = 0L
+            get() = field
+
+        var sortingTimeMessage = ""
+            get() = field
+
+        var searchingTimeMessage = ""
+            get() = field
+
+        init {
+
+            val lines = directoryFile.readLines().toMutableList()
+            val searchItems = searchItemsFile.readLines()
+
+            if (QuickSort(lines)) {
+                search(lines, searchItems, SearchType.JUMP_SEARCH)
+
+                sortingTimeMessage = "Sorting time: ${timingMessage(bubbleSortTime)}"
+                searchingTimeMessage = "Searching time: ${timingMessage(searchTime)}"
+            } else {
+
+                search(lines, searchItems, SearchType.LINEAR_SEARCH)
+                sortingTimeMessage = "Sorting time: ${timingMessage(bubbleSortTime)}" +
+                        " - STOPPED, moved to linear search"
+                searchingTimeMessage = "Searching time: ${timingMessage(searchTime)}"
+            }
+
+            println(statusMessage(foundCount, searchItems.size, searchTime))
+            println(sortingTimeMessage)
+            println(searchingTimeMessage)
+        }
+
+        fun QuickSort(a: MutableList<String>): Boolean {
+            return true
+        }
+    }
+  learner_created: true
+- name: src/phonebook/Search.kt
+  visible: true
+  text: |-
+    package phonebook
+
+    import kotlin.math.floor
+    import kotlin.math.max
+    import kotlin.math.min
+    import kotlin.math.sqrt
+
+    abstract class Search {
+
+        enum class SearchType {
+            LINEAR_SEARCH, JUMP_SEARCH, BINARY_SEARCH;
+        }
+
+        var searchTime: Long = 0L
+    //        get() = field
+
+        var foundCount = 0
+    //        get() = field
+
+        fun search(lines: List<String>, searchItems: List<String>, searchType: SearchType) {
+            val startTime = System.currentTimeMillis()
+            for (item in searchItems) {
+                when (searchType) {
+                    SearchType.LINEAR_SEARCH -> linearSearch(item, lines)
+                    SearchType.JUMP_SEARCH -> {
+                        val index = jumpSearch(item, lines)
+                        if (index != -1)
+                            foundCount++
+                    }
+                    SearchType.BINARY_SEARCH -> {
+                        val index = binarySearch(item, lines)
+                        if (index != -1)
+                            foundCount++
+                    }
+                }
+            }
+
+            val endTime = System.currentTimeMillis()
+            searchTime = endTime - startTime
+        }
+
+        fun linearSearch(item: String, lines: List<String>): Boolean {
+            for (line in lines) {
+                if (item == line.substringAfter(' ')) {
+                    foundCount++
+                    return true
+                }
+            }
+            return false
+        }
+
+        fun jumpSearch(item: String, arr: List<String>, left: Int = 0, right: Int = arr.size - 1): Int {
+            val step = floor(sqrt(right - left + 1.0)).toInt()
+            var lleft: Int = left
+            var lright: Int = min(lleft + step - 1, right)
+
+            if (right - left + 1 <= 1) {
+                return if (item == arr[lleft].substringAfter(" "))
+                    lleft
+                else -1
+            }
+            while (lleft <= right) {
+
+                if (item == arr[lleft].substringAfter(" "))
+                    return lleft
+                if (item < arr[lright].substringAfter(" "))
+                    return jumpSearch(item, arr, max(0, lleft - step), max(0, lleft - 1))
+                if (lleft == right) break
+                lleft = min(lleft + step, right)
+                lright = min(lleft + step - 1, right)
+            }
+            return -1
+        }
+
+        fun binarySearch(item: String, arr: List<String>, left: Int = 0, right: Int = arr.size - 1): Int {
+            val mid = (left + right) / 2
+            return if (item == arr[mid].substringAfter(" "))
+                mid
+            else if (item < arr[mid].substringAfter(" "))
+                binarySearch(item, arr, left, mid - 1)
+            else if (item > arr[mid].substringAfter(" "))
+                binarySearch(item, arr, mid + 1, right)
+            else
+                -1
+        }
+    }
+  learner_created: true
 feedback_link: https://hyperskill.org/projects/86/stages/478/implement#comment
-status: Unchecked
+status: Solved
+feedback:
+  message: Congratulations!
+  time: Sat, 13 Feb 2021 12:33:48 UTC
 record: -1

@@ -13,7 +13,9 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/Phone Book/task" />
+            <option value="$PROJECT_DIR$/Problems/Comparing numbers and characters" />
             <option value="$PROJECT_DIR$/Problems/Parting words" />
+            <option value="$PROJECT_DIR$/Problems/Program a Boolean function" />
             <option value="$PROJECT_DIR$/util" />
           </set>
         </option>

@@ -9,6 +9,9 @@ class BubbleSortJumpSearch(directoryFile: File,
     var bubbleSortTime: Long = 0L
         get() = field
 
+    var totalTime: Long = 0L
+        get() = field
+
     var sortingTimeMessage = ""
         get() = field
 
@@ -32,7 +35,8 @@ class BubbleSortJumpSearch(directoryFile: File,
             searchingTimeMessage = "Searching time: ${timingMessage(searchTime)}"
         }
 
-        println(statusMessage(foundCount, searchItems.size, searchTime))
+        totalTime = bubbleSortTime + searchTime
+        println(statusMessage(foundCount, searchItems.size, totalTime))
         println(sortingTimeMessage)
         println(searchingTimeMessage)
     }

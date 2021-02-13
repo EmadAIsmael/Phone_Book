@@ -8,14 +8,14 @@ import kotlin.math.sqrt
 abstract class Search {
 
     enum class SearchType {
-        LINEAR_SEARCH, JUMP_SEARCH;
+        LINEAR_SEARCH, JUMP_SEARCH, BINARY_SEARCH;
     }
 
     var searchTime: Long = 0L
-        get() = field
+//        get() = field
 
     var foundCount = 0
-        get() = field
+//        get() = field
 
     fun search(lines: List<String>, searchItems: List<String>, searchType: SearchType) {
         val startTime = System.currentTimeMillis()
@@ -23,7 +23,14 @@ abstract class Search {
             when (searchType) {
                 SearchType.LINEAR_SEARCH -> linearSearch(item, lines)
                 SearchType.JUMP_SEARCH -> {
-                    jumpSearch(item, lines)
+                    val index = jumpSearch(item, lines)
+                    if (index != -1)
+                        foundCount++
+                }
+                SearchType.BINARY_SEARCH -> {
+                    val index = binarySearch(item, lines)
+                    if (index != -1)
+                        foundCount++
                 }
             }
         }
@@ -42,36 +49,38 @@ abstract class Search {
         return false
     }
 
-    fun jumpSearch(item: String, lines: List<String>): Int {
-        for (line in lines) {
-            val index = jumpSearchItem(item, lines)
-            if (index != -1)
-                foundCount++
-                return index
-        }
-        return -1
-    }
-
-    fun jumpSearchItem(item: String, arr: List<String>, left: Int = 0, right: Int = arr.size - 1): Int {
+    fun jumpSearch(item: String, arr: List<String>, left: Int = 0, right: Int = arr.size - 1): Int {
         val step = floor(sqrt(right - left + 1.0)).toInt()
         var lleft: Int = left
         var lright: Int = min(lleft + step - 1, right)
 
         if (right - left + 1 <= 1) {
-            if (item == arr[lleft].substringAfter(" "))
-                return lleft
-            else return -1
+            return if (item == arr[lleft].substringAfter(" "))
+                lleft
+            else -1
         }
         while (lleft <= right) {
 
             if (item == arr[lleft].substringAfter(" "))
                 return lleft
             if (item < arr[lright].substringAfter(" "))
-                return jumpSearchItem(item, arr, max(0, lleft - step), max(0, lleft - 1))
+                return jumpSearch(item, arr, max(0, lleft - step), max(0, lleft - 1))
             if (lleft == right) break
             lleft = min(lleft + step, right)
             lright = min(lleft + step - 1, right)
         }
         return -1
+    }
+
+    fun binarySearch(item: String, arr: List<String>, left: Int = 0, right: Int = arr.size - 1): Int {
+        val mid = (left + right) / 2
+        return if (item == arr[mid].substringAfter(" "))
+            mid
+        else if (item < arr[mid].substringAfter(" "))
+            binarySearch(item, arr, left, mid - 1)
+        else if (item > arr[mid].substringAfter(" "))
+            binarySearch(item, arr, mid + 1, right)
+        else
+            -1
     }
 }

@@ -13,6 +13,9 @@ fun main() {
     println("Start searching (bubble sort + jump search)...")
     val bubbleSortJumpSearch = BubbleSortJumpSearch(directoryFile, searchItemsFile, linearSearchTiming)
 
+    println()
+    println("Start searching (quick sort + binary search)...")
+    QuickSortBinarySearch(directoryFile, searchItemsFile, linearSearchTiming)
 }
 
 fun formatMillis(t: Long): LongArray {
