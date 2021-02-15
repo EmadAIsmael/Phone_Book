@@ -11,11 +11,11 @@ fun main() {
 
     println()
     println("Start searching (bubble sort + jump search)...")
-    val bubbleSortJumpSearch = BubbleSortJumpSearch(directoryFile, searchItemsFile, linearSearchTiming)
+    BubbleSortJumpSearch(directoryFile, searchItemsFile, linearSearchTiming)
 
     println()
     println("Start searching (quick sort + binary search)...")
-    QuickSortBinarySearch(directoryFile, searchItemsFile, linearSearchTiming)
+    QuickSortBinarySearch(directoryFile, searchItemsFile/*, linearSearchTiming*/)
 }
 
 fun formatMillis(t: Long): LongArray {
@@ -31,7 +31,7 @@ fun timingMessage(t: Long): String {
     return "$min min. $sec sec. $ms ms."
 }
 
-fun recordsMessage(found: Int, total: Int) = "Found $found / ${total} entries."
+fun recordsMessage(found: Int, total: Int) = "Found $found / $total entries."
 
 fun statusMessage(found: Int, total: Int, searchTime: Long) =
     "${recordsMessage(found, total)} Time taken: ${timingMessage(searchTime)}"

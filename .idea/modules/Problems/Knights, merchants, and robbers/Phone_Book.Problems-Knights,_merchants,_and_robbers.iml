@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module external.linked.project.id=":Problems-Knights,_merchants,_and_robbers" external.linked.project.path="$MODULE_DIR$/../../../../Problems/Knights, merchants, and robbers" external.root.project.path="$MODULE_DIR$/../../../.." external.system.id="GRADLE" external.system.module.group="Phone_Book" external.system.module.version="unspecified" type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$/../../../../Problems/Knights, merchants, and robbers">
+      <excludeFolder url="file://$MODULE_DIR$/../../../../Problems/Knights, merchants, and robbers/.gradle" />
+      <excludeFolder url="file://$MODULE_DIR$/../../../../Problems/Knights, merchants, and robbers/build" />
+      <excludeFolder url="file://$MODULE_DIR$/../../../../Problems/Knights, merchants, and robbers/out" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+</module>

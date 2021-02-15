@@ -4,19 +4,15 @@ import java.io.File
 
 class BubbleSortJumpSearch(directoryFile: File,
                            searchItemsFile: File,
-                           val linearSearchTiming: Long = 0L): Search() {
+                           private val linearSearchTiming: Long = 0L): Search() {
 
-    var bubbleSortTime: Long = 0L
-        get() = field
+    private var bubbleSortTime: Long = 0L
 
-    var totalTime: Long = 0L
-        get() = field
+    private var totalTime: Long = 0L
 
-    var sortingTimeMessage = ""
-        get() = field
+    private var sortingTimeMessage = ""
 
-    var searchingTimeMessage = ""
-        get() = field
+    private var searchingTimeMessage = ""
 
     init {
 

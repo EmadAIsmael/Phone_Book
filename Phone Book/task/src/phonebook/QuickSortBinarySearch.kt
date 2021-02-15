@@ -4,28 +4,24 @@ import java.io.File
 
 class QuickSortBinarySearch(
     directoryFile: File,
-    searchItemsFile: File,
-    val linearSearchTiming: Long = 0L
+    searchItemsFile: File/*,
+    val linearSearchTiming: Long = 0L*/
 ) : Search() {
 
-    var quickSortTime: Long = 0L
-        get() = field
+    private var quickSortTime: Long = 0L
 
-    var totalTime: Long = 0L
-        get() = field
+    private var totalTime: Long = 0L
 
-    var sortingTimeMessage = ""
-        get() = field
+    private var sortingTimeMessage = ""
 
-    var searchingTimeMessage = ""
-        get() = field
+    private var searchingTimeMessage = ""
 
     init {
 
         val lines = directoryFile.readLines().toMutableList()
         val searchItems = searchItemsFile.readLines()
 
-        val timeLimit = linearSearchTiming * 10
+        // val timeLimit = linearSearchTiming * 10
         val startTime = System.currentTimeMillis()
         quick(lines)
         search(lines, searchItems, SearchType.BINARY_SEARCH)
@@ -39,11 +35,11 @@ class QuickSortBinarySearch(
         println(searchingTimeMessage)
     }
 
-    fun exch(a: MutableList<String>, i: Int, j: Int) {
+    private fun exch(a: MutableList<String>, i: Int, j: Int) {
         a[i] = a[j].also { a[j] = a[i] }
     }
 
-    fun quick(a: MutableList<String>, lo: Int = 0, hi: Int = a.size - 1) {
+    private fun quick(a: MutableList<String>, lo: Int = 0, hi: Int = a.size - 1) {
         if (hi <= lo) return
         var lt = lo
         var i = lo + 1

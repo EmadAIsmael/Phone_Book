@@ -12,10 +12,8 @@ abstract class Search {
     }
 
     var searchTime: Long = 0L
-//        get() = field
 
     var foundCount = 0
-//        get() = field
 
     fun search(lines: List<String>, searchItems: List<String>, searchType: SearchType) {
         val startTime = System.currentTimeMillis()
@@ -39,17 +37,20 @@ abstract class Search {
         searchTime = endTime - startTime
     }
 
-    fun linearSearch(item: String, lines: List<String>): Boolean {
-        for (line in lines) {
+    private fun linearSearch(item: String, lines: List<String>): Int {
+        for ((idx, line) in lines.withIndex()) {
             if (item == line.substringAfter(' ')) {
                 foundCount++
-                return true
+                return idx
             }
         }
-        return false
+        return -1
     }
 
-    fun jumpSearch(item: String, arr: List<String>, left: Int = 0, right: Int = arr.size - 1): Int {
+    private fun jumpSearch(item: String,
+                           arr: List<String>,
+                           left: Int = 0,
+                           right: Int = arr.size - 1): Int {
         val step = floor(sqrt(right - left + 1.0)).toInt()
         var lleft: Int = left
         var lright: Int = min(lleft + step - 1, right)
@@ -72,15 +73,17 @@ abstract class Search {
         return -1
     }
 
-    fun binarySearch(item: String, arr: List<String>, left: Int = 0, right: Int = arr.size - 1): Int {
+    private fun binarySearch(
+        item: String,
+        arr: List<String>,
+        left: Int = 0,
+        right: Int = arr.size - 1): Int {
         val mid = (left + right) / 2
-        return if (item == arr[mid].substringAfter(" "))
-            mid
-        else if (item < arr[mid].substringAfter(" "))
-            binarySearch(item, arr, left, mid - 1)
-        else if (item > arr[mid].substringAfter(" "))
-            binarySearch(item, arr, mid + 1, right)
-        else
-            -1
+        return when {
+            item == arr[mid].substringAfter(" ") -> mid
+            item < arr[mid].substringAfter(" ") -> binarySearch(item, arr, left, mid - 1)
+            item > arr[mid].substringAfter(" ") -> binarySearch(item, arr, mid + 1, right)
+            else -> -1
+        }
     }
 }
