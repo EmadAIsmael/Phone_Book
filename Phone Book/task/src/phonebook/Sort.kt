@@ -1,13 +1,6 @@
 package phonebook
 
-class Sort(private val linearSearchTiming: Long = 0L) {
-//    private var bubbleSortTime: Long = 0L
-//
-//    private var totalTime: Long = 0L
-//
-//    private var sortingTimeMessage = ""
-//
-//    private var searchingTimeMessage = ""
+class Sort {
 
     fun bubbleSort(a: MutableList<PhoneBook.PhoneBookEntry>): Boolean {
         val timeLimit = PhoneBook.linearSearchTime * 10

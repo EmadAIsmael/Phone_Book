@@ -2,12 +2,13 @@ package phonebook
 
 import java.io.File
 
-class PhoneBook(dirFilePath: String, searchFilePath: String): Search1() {
+class PhoneBook(dirFilePath: String, searchFilePath: String) : Search() {
     private val directoryFile = File(dirFilePath)
     private val searchItemsFile = File(searchFilePath)
-    private val dirList = mutableListOf<PhoneBookEntry>()
+    val dirList = mutableListOf<PhoneBookEntry>()
     private val searchList = mutableListOf<String>()
     private val sorter = Sort()
+    var ht: HashTable? = null
 
     data class PhoneBookEntry(val phone: String, val name: String) {
         override fun equals(other: Any?): Boolean = this.name == (other as PhoneBookEntry).name
@@ -18,48 +19,57 @@ class PhoneBook(dirFilePath: String, searchFilePath: String): Search1() {
         var linearFoundCount: Int = 0
         var bubbleFoundCount: Int = 0
         var quickFoundCount: Int = 0
+        var hashFoundCount: Int = 0
 
         //
         // unordered, linear search
         //
         var linearSearchTime: Long = 0L
         var linearTotalTime: Long = 0L
+
         //
         // bubble sort, jump search
         //
         var bubbleSortTime: Long = 0L
-
         var bubbleSearchTime: Long = 0L
-
         var bubbleTotalTime: Long = 0L
-
         var bubbleSortTimeMessage = ""
-
         var bubbleSearchTimeMessage = ""
+
         //
         // quick sort, binary search
         //
         var quickSortTime: Long = 0L
-
         var quickSearchTime: Long = 0L
-
         var quickTotalTime: Long = 0L
-
         var quickSortTimeMessage = ""
-
         var quickSearchTimeMessage = ""
+
         //
+        // hash table
         //
+        var hashCreateTime: Long = 0L
+        var hashSearchTime: Long = 0L
+        var hashTotalTime: Long = 0L
+        var hashCreateTimeMessage = ""
+        var hashSearchTimeMessage = ""
     }
 
     init {
+
         dirList()
         searchList()
+        ht = HashTable(dirList)
     }
 
     private fun dirList(): MutableList<PhoneBookEntry> {
         directoryFile.forEachLine {
-            dirList.add(PhoneBookEntry(phone = it.substringBefore(" "), name = it.substringAfter(" ")))
+            dirList.add(
+                PhoneBookEntry(
+                    phone = it.substringBefore(" "),
+                    name = it.substringAfter(" ")
+                )
+            )
         }
         return dirList
     }
@@ -79,19 +89,19 @@ class PhoneBook(dirFilePath: String, searchFilePath: String): Search1() {
         return longArrayOf(min, sec, ms)
     }
 
-//    private fun timingMessage(t: Long): String {
-//        val (min, sec, ms) = formatMillis(t)
-//        return "$min min. $sec sec. $ms ms."
-//    }
-//
-//    private fun recordsMessage(found: Int, total: Int) = "Found $found / $total entries."
-//
-//    fun statusMessage(found: Int, total: Int, searchTime: Long) =
-//        "${recordsMessage(found, total)} Time taken: ${timingMessage(searchTime)}"
+    private fun timingMessage(t: Long): String {
+        val (min, sec, ms) = formatMillis(t)
+        return "$min min. $sec sec. $ms ms."
+    }
+
+    private fun recordsMessage(found: Int, total: Int) = "Found $found / $total entries."
+
+    private fun statusMessage(found: Int, total: Int, searchTime: Long) =
+        "${recordsMessage(found, total)} Time taken: ${timingMessage(searchTime)}"
 
     fun linearSearch(): Long {
 
-        search(dirList, searchList, SearchType.LINEAR_SEARCH)
+        search(this, searchList, SearchType.LINEAR_SEARCH)
         println(statusMessage(linearFoundCount, searchList.size, linearSearchTime))
 
         linearTotalTime = linearSearchTime
@@ -101,14 +111,16 @@ class PhoneBook(dirFilePath: String, searchFilePath: String): Search1() {
     fun bubbleSortJumpSearch() {
         if (sorter.bubbleSort(dirList)) {
             val timing = System.currentTimeMillis()
-            search(dirList, searchList, SearchType.JUMP_SEARCH)
+            search(this, searchList, SearchType.JUMP_SEARCH)
             bubbleSearchTime = System.currentTimeMillis() - timing
 
             bubbleSortTimeMessage = "Sorting time: ${timingMessage(bubbleSortTime)}"
             bubbleSearchTimeMessage = "Searching time: ${timingMessage(bubbleSearchTime)}"
         } else {
             val timing = System.currentTimeMillis()
-            search(dirList, searchList, SearchType.LINEAR_SEARCH)
+            linearFoundCount = 0
+            search(this, searchList, SearchType.LINEAR_SEARCH)
+            bubbleFoundCount = linearFoundCount
             bubbleSearchTime = System.currentTimeMillis() - timing
 
             bubbleSortTimeMessage = "Sorting time: ${timingMessage(bubbleSortTime)} - STOPPED, moved to linear search"
@@ -116,41 +128,44 @@ class PhoneBook(dirFilePath: String, searchFilePath: String): Search1() {
         }
 
         bubbleTotalTime = bubbleSortTime + bubbleSearchTime
-        println(statusMessage(linearFoundCount, searchList.size, bubbleTotalTime))
+        println(statusMessage(bubbleFoundCount, searchList.size, bubbleTotalTime))
         println(bubbleSortTimeMessage)
         println(bubbleSearchTimeMessage)
     }
 
     fun quickSortBinarySearch() {
-        val startTime = System.currentTimeMillis()
+        var startTime = System.currentTimeMillis()
         sorter.quick(dirList)
-        search(dirList, searchList, SearchType.BINARY_SEARCH)
         quickSortTime = System.currentTimeMillis() - startTime
-        quickSortTimeMessage = "Sorting time: ${phonebook.timingMessage(quickSortTime)}"
-        quickSearchTimeMessage = "Searching time: ${phonebook.timingMessage(quickSearchTime)}"
+
+        startTime = System.currentTimeMillis()
+        search(this, searchList, SearchType.BINARY_SEARCH)
+        quickSearchTime = System.currentTimeMillis() - startTime
+
+        quickSortTimeMessage = "Sorting time: ${timingMessage(quickSortTime)}"
+        quickSearchTimeMessage = "Searching time: ${timingMessage(quickSearchTime)}"
         quickTotalTime = quickSortTime + quickSearchTime
 
-        println(statusMessage(linearFoundCount, searchList.size, quickTotalTime))
+        println(statusMessage(quickFoundCount, searchList.size, quickTotalTime))
         println(quickSortTimeMessage)
         println(quickSearchTimeMessage)
     }
-}
 
-fun main() {
+    fun hashmapSearch() {
+        var startTime = System.currentTimeMillis()
+        ht?.index()
+        hashCreateTime = System.currentTimeMillis() - startTime
 
-    val pb = PhoneBook(
-        "/home/emad/kotlin_workspace/directory.txt",
-        "/home/emad/kotlin_workspace/find.txt"
-    )
+        startTime = System.currentTimeMillis()
+        search(this, searchList, SearchType.HASH_SEARCH)
+        hashSearchTime = System.currentTimeMillis() - startTime
 
-    println("Start searching (linear search)...")
-    pb.linearSearch()
+        hashCreateTimeMessage = "Creating time: ${timingMessage(hashCreateTime)}"
+        hashSearchTimeMessage = "Searching time: ${timingMessage(hashSearchTime)}"
+        hashTotalTime = hashCreateTime + hashSearchTime
 
-    println()
-    println("Start searching (bubble sort + jump search)...")
-    pb.bubbleSortJumpSearch()
-
-    println()
-    println("Start searching (quick sort + binary search)...")
-    pb.quickSortBinarySearch()
+        println(statusMessage(hashFoundCount, searchList.size, hashTotalTime))
+        println(hashCreateTimeMessage)
+        println(hashSearchTimeMessage)
+    }
 }
